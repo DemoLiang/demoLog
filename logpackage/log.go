@@ -45,7 +45,7 @@ func Log(level string, format string, v ...interface{}) {
 	}
 	data, _ := json.Marshal(&demoLogS)
 	logger.Println(string(data))
-	log.Printf("%s\n", data)
+	log.Printf("%s\n", userCnt)
 }
 
 func Info(format string, v ...interface{}) {
