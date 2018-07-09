@@ -28,13 +28,7 @@ func init() {
 }
 
 func Log(level string, format string, v ...interface{}) {
-	_, file, line, ok := runtime.Caller(0)
-	if !ok {
-		file = "unknown"
-		line = 0
-	}
-	cols := strings.Split(file, "/")
-	file = cols[len(cols)-1]
+	file, line := LogLocation()
 	userCnt := fmt.Sprintf(format, v...)
 	demoLogS := DemoLogS{
 		Level: level,
@@ -45,7 +39,24 @@ func Log(level string, format string, v ...interface{}) {
 	}
 	data, _ := json.Marshal(&demoLogS)
 	logger.Println(string(data))
-	log.Printf("%s\n", userCnt)
+	log.Printf("%v %v %s\n", file,line,userCnt)
+	//log.Printf("%s",data)
+}
+
+func LogLocation() (string, int) {
+	depth := 0
+	for {
+		_, file, line, ok := runtime.Caller(depth)
+		if !ok {
+			return "unknown", 0
+		}
+		if strings.HasSuffix(file, "/log.go") {
+			depth++
+			continue
+		}
+		cols := strings.Split(file, "/")
+		return cols[len(cols)-1], line
+	}
 }
 
 func Info(format string, v ...interface{}) {
